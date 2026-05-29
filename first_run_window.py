@@ -1,3 +1,5 @@
+##5/28/2026##
+
 import json
 import re
 import tkinter as tk
@@ -26,8 +28,8 @@ class FirstRunWindow:
 
         self.window = tk.Toplevel(parent)
         self.window.title("First Run Setup")
-        self.window.geometry("760x820")
-        self.window.minsize(760, 820)
+        self.window.geometry("760x900")
+        self.window.minsize(760, 900)
         self.window.configure(bg=BG_COLOR)
         self.window.transient(parent)
         self.window.grab_set()

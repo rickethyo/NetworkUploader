@@ -1,9 +1,12 @@
+##5/28/2026##
+
 from pathlib import Path
 import json
 import logging
 import os
 import sys
 import tkinter as tk
+import urllib.request
 from tkinter import messagebox
 from tkinter import ttk
 from tkinterdnd2 import DND_FILES, TkinterDnD
@@ -15,7 +18,11 @@ from settings_window import SettingsWindow
 
 APP_NAME = "Network Uploader"
 APP_DISPLAY_NAME = "Network Uploader"
-APP_VERSION = "1.4.0"
+APP_VERSION = "1.5.0"
+VERSION_CHECK_URL = "https://raw.githubusercontent.com/rickethyo/NetworkUploader/main/version.json"
+
+ICON_ICO_FILE_NAME = "assets/network_uploader.ico"
+ICON_PNG_FILE_NAME = "assets/network_uploader.png"
 
 CONFIG_FILE_NAME = "config.json"
 SETTINGS_FILE_NAME = "settings.json"
@@ -46,6 +53,8 @@ def get_resource_folder():
 
     return Path(__file__).parent
 
+def get_resource_path(file_name):
+    return get_resource_folder() / file_name
 
 def get_user_data_folder():
     appdata = os.getenv("APPDATA")
@@ -66,6 +75,27 @@ BUNDLED_CONFIG_FILE = RESOURCE_FOLDER / CONFIG_FILE_NAME
 CONFIG_FILE = USER_DATA_FOLDER / CONFIG_FILE_NAME
 SETTINGS_FILE = USER_DATA_FOLDER / SETTINGS_FILE_NAME
 LOG_FOLDER = USER_DATA_FOLDER / "logs"
+
+
+def set_application_icon(root):
+    icon_ico_path = get_resource_path(ICON_ICO_FILE_NAME)
+    icon_png_path = get_resource_path(ICON_PNG_FILE_NAME)
+
+    try:
+        if icon_ico_path.exists():
+            root.iconbitmap(icon_ico_path)
+    except tk.TclError:
+        pass
+
+    try:
+        if icon_png_path.exists():
+            icon_image = tk.PhotoImage(file=icon_png_path)
+            root.iconphoto(True, icon_image)
+
+            # Keep a reference so Python does not garbage collect the image.
+            root.icon_image = icon_image
+    except tk.TclError:
+        pass
 
 
 def load_bundled_config_template():
@@ -251,6 +281,47 @@ def save_settings(uploaded_by):
     with open(SETTINGS_FILE, "w", encoding="utf-8") as file:
         json.dump(settings, file, indent=4)
 
+def parse_version(version_text):
+    version_parts = []
+
+    for part in version_text.split("."):
+        try:
+            version_parts.append(int(part))
+        except ValueError:
+            version_parts.append(0)
+
+    return tuple(version_parts)
+
+
+def check_for_updates(parent):
+    try:
+        with urllib.request.urlopen(VERSION_CHECK_URL, timeout=3) as response:
+            data = response.read().decode("utf-8")
+
+        version_info = json.loads(data)
+
+        latest_version = version_info.get("latest_version", "").strip()
+        download_url = version_info.get("download_url", "").strip()
+        message = version_info.get(
+            "message",
+            "A new version of Network Uploader is available."
+        )
+
+        if not latest_version:
+            return
+
+        if parse_version(latest_version) > parse_version(APP_VERSION):
+            messagebox.showinfo(
+                "Update Available",
+                f"{message}\n\n"
+                f"Current version: {APP_VERSION}\n"
+                f"Latest version: {latest_version}\n\n"
+                f"Download:\n{download_url}",
+                parent=parent
+            )
+
+    except Exception:
+        logging.info("Version check failed.", exc_info=True)
 
 class NetworkUploaderApp:
     def __init__(self, root, config):
@@ -278,6 +349,7 @@ class NetworkUploaderApp:
         self.category_frame = None
 
         self.build_gui()
+        self.root.after(1000, lambda: check_for_updates(self.root))
 
     def create_button(self, parent, text, command, width=18):
         return tk.Button(
@@ -891,6 +963,7 @@ def main():
     logging.info("Starting %s version %s", APP_NAME, APP_VERSION)
 
     root = TkinterDnD.Tk()
+    set_application_icon(root)
 
     try:
         config = get_startup_config(root)
