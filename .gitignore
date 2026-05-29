@@ -17,11 +17,18 @@ dist/
 pip-wheel-metadata/
 
 # PyInstaller artifacts
+*.spec
 *.spec.bak
 
-# Logs
+# App-generated local user data
+config.json
+settings.json
 logs/
 *.log
+
+# Safe example config files
+!config.example.json
+!settings.example.json
 
 # Test and tooling caches
 .pytest_cache/

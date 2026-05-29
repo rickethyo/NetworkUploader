@@ -1,0 +1,7 @@
+{
+  "network_share": "",
+  "destinations": {},
+  "video_extensions": [".mp4", ".mkv", ".mov", ".avi", ".m4v", ".wmv"],
+  "move_files": false,
+  "uploaders": ["Anonymous"]
+}
