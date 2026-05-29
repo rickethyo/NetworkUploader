@@ -19,7 +19,7 @@ from settings_window import SettingsWindow
 APP_NAME = "Network Uploader"
 APP_DISPLAY_NAME = "Network Uploader"
 APP_VERSION = "1.5.0"
-VERSION_CHECK_URL = "https://raw.githubusercontent.com/rickethyo/NetworkUploader/main/version.json"
+VERSION_CHECK_URL = "https://raw.githubusercontent.com/rickethyo/NetworkUploader/master/version.json"
 
 ICON_ICO_FILE_NAME = "assets/network_uploader.ico"
 ICON_PNG_FILE_NAME = "assets/network_uploader.png"
