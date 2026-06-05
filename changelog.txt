@@ -1,0 +1,78 @@
+Network Uploader Changelog
+
+This changelog summarizes the major changes made to Network Uploader so far.
+Some earlier entries are grouped by feature because exact version numbers were not always tracked at the time.
+
+Version 1.5.2
+- Removed the previous video-only file restrictions.
+- The app now accepts any valid file type instead of only approved video extensions.
+- Removed the allowed file extension setting from first-run setup.
+- Removed the allowed file extension setting from the Settings window.
+- Removed extension-based validation during drag-and-drop.
+- Updated user-facing text from "supported files" or "video files" to more general "files."
+- Kept validation that prevents invalid paths or folders from being uploaded as files.
+
+Version 1.5.1 / Recent Maintenance
+- Updated project documentation and README content.
+- Clarified build instructions for creating a Windows executable with PyInstaller.
+- Added guidance for excluding generated build files from Git.
+- Recommended using GitHub Releases for finished executable builds instead of committing .exe files directly.
+
+Version 1.5.0
+- Added first-run setup flow.
+- On first launch, the app prompts the user to select a base network share folder.
+- First-run setup also guides the user through creating the first upload destination.
+- Added support for setting up users during initial setup.
+- Changed the default upload user behavior to allow a generic/default user instead of requiring a named user immediately.
+- Added the ability to add additional users during setup if desired.
+
+Settings Window Update
+- Moved the Settings window into its own Python file for cleaner organization.
+- Added destination management to the Settings window.
+- Added support for adding additional destination paths.
+- Improved Settings window sizing so controls and buttons display properly.
+- Continued separating UI/configuration logic from the main application file.
+
+Destination and Path Management
+- Added support for multiple configured upload destinations.
+- Added destination categories so files can be sent to different network locations.
+- Added support for configuring additional destination paths after setup.
+- Added local configuration handling so destination and user settings persist between app launches.
+
+Upload Workflow Improvements
+- Added drag-and-drop upload support using tkinterdnd2.
+- Added copy or move behavior for sending files to configured destinations.
+- Added duplicate-file handling so existing files are not overwritten accidentally.
+- Added automatic renaming behavior when a duplicate file is detected.
+- Added optional file renaming before upload.
+- Added upload tracking so the selected user can be associated with uploaded files.
+- Added local logging for upload activity.
+
+Project Structure and General Improvements
+- Organized the project into multiple Python files instead of keeping all logic in one file.
+- Improved maintainability by separating setup, settings, configuration, and main UI behavior.
+- Added README documentation explaining the purpose of the app, requirements, how to run it, and how to build it.
+- Added PyInstaller build instructions for creating a standalone Windows executable.
+- Added support for tkinterdnd2 collection during executable builds.
+
+Build Notes
+- Recommended build command:
+
+  pyinstaller --onefile --windowed --name "Network Uploader" --collect-all tkinterdnd2 main.py
+
+- The generated executable will be created in:
+
+  dist\Network Uploader.exe
+
+Git Notes
+- The compiled executable should normally not be committed directly to the Git repository.
+- Recommended .gitignore entries include:
+
+  dist/
+  build/
+  *.spec
+  *.exe
+
+- Source files, README.md, requirements.txt, and changelog.txt should be committed.
+- Finished executable builds are better uploaded as GitHub Release assets.
+
