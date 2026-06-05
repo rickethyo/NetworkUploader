@@ -18,7 +18,7 @@ from settings_window import SettingsWindow
 
 APP_NAME = "Network Uploader"
 APP_DISPLAY_NAME = "Network Uploader"
-APP_VERSION = "1.5.1"
+APP_VERSION = "1.5.2"
 VERSION_CHECK_URL = "https://raw.githubusercontent.com/rickethyo/NetworkUploader/master/version.json"
 
 ICON_ICO_FILE_NAME = "assets/network_uploader.ico"
@@ -32,7 +32,6 @@ INVALID_FILE_NAME_CHARS = set('<>:"/\\|?*')
 DEFAULT_CONFIG = {
     "network_share": "",
     "destinations": {},
-    "video_extensions": [".mp4", ".mkv", ".mov", ".avi", ".m4v", ".wmv"],
     "move_files": False,
     "uploaders": ["User"]
 }
@@ -192,25 +191,7 @@ def normalize_config(config):
 
     normalized_config["destinations"] = normalized_destinations
 
-    video_extensions = normalized_config.get("video_extensions", [])
-    normalized_extensions = []
-
-    for extension in video_extensions:
-        extension = str(extension).strip().lower()
-
-        if not extension:
-            continue
-
-        if not extension.startswith("."):
-            extension = f".{extension}"
-
-        if extension not in normalized_extensions:
-            normalized_extensions.append(extension)
-
-    if not normalized_extensions:
-        normalized_extensions = DEFAULT_CONFIG["video_extensions"]
-
-    normalized_config["video_extensions"] = normalized_extensions
+    normalized_config.pop("video_extensions", None)
     normalized_config["move_files"] = bool(normalized_config.get("move_files", False))
     normalized_config["network_share"] = str(normalized_config.get("network_share", "")).strip()
     normalized_config["uploaders"] = normalize_uploaders(normalized_config.get("uploaders", []))
@@ -471,7 +452,7 @@ class NetworkUploaderApp:
 
         drop_label = tk.Label(
             self.root,
-            text="Drag supported files into the box below",
+            text="Drag files into the box below",
             font=("Segoe UI", 12, "bold"),
             bg=BG_COLOR,
             fg=TEXT_COLOR
@@ -684,21 +665,13 @@ class NetworkUploaderApp:
     def handle_drop(self, event):
         dropped_files = self.root.tk.splitlist(event.data)
 
-        video_extensions = set(
-            extension.lower()
-            for extension in self.config["video_extensions"]
-        )
-
         for file_name in dropped_files:
             file_path = Path(file_name)
 
             if not file_path.is_file():
-                continue
-
-            if file_path.suffix.lower() not in video_extensions:
                 messagebox.showwarning(
-                    "Skipped File",
-                    f"Not a supported file:\n{file_path.name}"
+                    "Skipped Item",
+                    f"Only files can be uploaded:\n{file_path.name}"
                 )
                 continue
 
@@ -832,7 +805,7 @@ class NetworkUploaderApp:
         if not self.selected_files:
             messagebox.showerror(
                 "No Files",
-                "Drag at least one supported file into the box first."
+                "Drag at least one file into the box first."
             )
             return
 

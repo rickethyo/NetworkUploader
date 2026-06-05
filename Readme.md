@@ -6,7 +6,7 @@ The app is built with Python, Tkinter, and tkinterdnd2. It supports drag-and-dro
 
 ## Features
 
-- Drag and drop supported files into the upload list
+- Drag and drop files into the upload list
 - Copy or move files to configured network folders
 - Create and manage destination categories
 - Rename files before upload

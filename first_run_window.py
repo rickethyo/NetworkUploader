@@ -28,8 +28,8 @@ class FirstRunWindow:
 
         self.window = tk.Toplevel(parent)
         self.window.title("First Run Setup")
-        self.window.geometry("760x900")
-        self.window.minsize(760, 900)
+        self.window.geometry("760x820")
+        self.window.minsize(760, 820)
         self.window.configure(bg=BG_COLOR)
         self.window.transient(parent)
         self.window.grab_set()
@@ -43,12 +43,6 @@ class FirstRunWindow:
             value=self.default_config.get("network_share", "")
         )
 
-        extensions = self.default_config.get(
-            "video_extensions",
-            [".mp4", ".mkv", ".mov", ".avi", ".m4v", ".wmv"]
-        )
-
-        self.extensions_var = tk.StringVar(value=", ".join(extensions))
         self.move_files_var = tk.BooleanVar(
             value=self.default_config.get("move_files", False)
         )
@@ -251,32 +245,6 @@ class FirstRunWindow:
             font=("Segoe UI", 9)
         ).grid(row=2, column=1, sticky="w", padx=5, pady=(0, 8))
 
-        extensions_frame = tk.LabelFrame(
-            self.window,
-            text="Allowed File Extensions",
-            bg=PANEL_COLOR,
-            fg=TEXT_COLOR,
-            font=("Segoe UI", 10, "bold"),
-            padx=8,
-            pady=8
-        )
-        extensions_frame.pack(fill="x", padx=20, pady=8)
-        extensions_frame.columnconfigure(0, weight=1)
-
-        tk.Label(
-            extensions_frame,
-            text="Separate extensions with commas.",
-            bg=PANEL_COLOR,
-            fg=MUTED_TEXT_COLOR,
-            font=("Segoe UI", 9)
-        ).grid(row=0, column=0, sticky="w", padx=8, pady=(8, 2))
-
-        tk.Entry(
-            extensions_frame,
-            textvariable=self.extensions_var,
-            font=("Segoe UI", 10),
-            relief="flat"
-        ).grid(row=1, column=0, sticky="ew", padx=8, pady=(2, 8))
 
         behavior_frame = tk.LabelFrame(
             self.window,
@@ -381,31 +349,6 @@ class FirstRunWindow:
 
         self.destination_path_var.set(base_folder)
 
-    def parse_extensions(self):
-        raw_extensions = self.extensions_var.get().strip()
-
-        if not raw_extensions:
-            raise ValueError("At least one file extension is required.")
-
-        extensions = []
-
-        for extension in raw_extensions.split(","):
-            extension = extension.strip().lower()
-
-            if not extension:
-                continue
-
-            if not extension.startswith("."):
-                extension = f".{extension}"
-
-            if extension not in extensions:
-                extensions.append(extension)
-
-        if not extensions:
-            raise ValueError("At least one file extension is required.")
-
-        return extensions
-
     def parse_uploaders(self):
         uploaders = []
 
@@ -445,7 +388,6 @@ class FirstRunWindow:
             network_share = self.network_share_var.get().strip()
             destination_name = self.destination_name_var.get().strip()
             destination_path = self.destination_path_var.get().strip()
-            extensions = self.parse_extensions()
             uploaders = self.parse_uploaders()
 
             if not network_share:
@@ -468,7 +410,6 @@ class FirstRunWindow:
                     "path": destination_path
                 }
             }
-            config["video_extensions"] = extensions
             config["move_files"] = self.move_files_var.get()
             config["uploaders"] = uploaders
 

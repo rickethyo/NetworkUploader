@@ -28,8 +28,8 @@ class SettingsWindow:
 
         self.window = tk.Toplevel(parent)
         self.window.title("Network Uploader Settings")
-        self.window.geometry("820x760")
-        self.window.minsize(820, 760)
+        self.window.geometry("820x700")
+        self.window.minsize(820, 700)
         self.window.configure(bg=BG_COLOR)
         self.window.transient(parent)
         self.window.grab_set()
@@ -38,8 +38,6 @@ class SettingsWindow:
             value=self.config.get("network_share", "")
         )
 
-        extensions = self.config.get("video_extensions", [])
-        self.extensions_var = tk.StringVar(value=", ".join(extensions))
         self.move_files_var = tk.BooleanVar(value=self.config.get("move_files", False))
 
         uploaders = self.config.get("uploaders", ["User"])
@@ -77,7 +75,7 @@ class SettingsWindow:
 
         subtitle_label = tk.Label(
             self.window,
-            text="Manage users, file types, upload behavior, and network destinations.",
+            text="Manage users, upload behavior, and network destinations.",
             font=("Segoe UI", 10),
             bg=BG_COLOR,
             fg=MUTED_TEXT_COLOR
@@ -187,32 +185,6 @@ class SettingsWindow:
             relief="flat"
         ).grid(row=1, column=0, sticky="ew", padx=8, pady=(2, 8))
 
-        extensions_frame = tk.LabelFrame(
-            self.window,
-            text="Allowed File Extensions",
-            bg=PANEL_COLOR,
-            fg=TEXT_COLOR,
-            font=("Segoe UI", 10, "bold"),
-            padx=8,
-            pady=8
-        )
-        extensions_frame.pack(fill="x", padx=20, pady=6)
-        extensions_frame.columnconfigure(0, weight=1)
-
-        tk.Label(
-            extensions_frame,
-            text="Separate extensions with commas, for example: .mp4, .mkv, .mov",
-            bg=PANEL_COLOR,
-            fg=MUTED_TEXT_COLOR,
-            font=("Segoe UI", 9)
-        ).grid(row=0, column=0, sticky="w", padx=8, pady=(8, 2))
-
-        tk.Entry(
-            extensions_frame,
-            textvariable=self.extensions_var,
-            font=("Segoe UI", 10),
-            relief="flat"
-        ).grid(row=1, column=0, sticky="ew", padx=8, pady=(2, 8))
 
         behavior_frame = tk.LabelFrame(
             self.window,
@@ -393,31 +365,6 @@ class SettingsWindow:
         if selected_folder:
             variable.set(selected_folder)
 
-    def parse_extensions(self):
-        raw_extensions = self.extensions_var.get().strip()
-
-        if not raw_extensions:
-            raise ValueError("At least one file extension is required.")
-
-        extensions = []
-
-        for extension in raw_extensions.split(","):
-            extension = extension.strip().lower()
-
-            if not extension:
-                continue
-
-            if not extension.startswith("."):
-                extension = f".{extension}"
-
-            if extension not in extensions:
-                extensions.append(extension)
-
-        if not extensions:
-            raise ValueError("At least one file extension is required.")
-
-        return extensions
-
     def parse_uploaders(self):
         raw_uploaders = self.uploaders_var.get().strip()
 
@@ -513,7 +460,6 @@ class SettingsWindow:
             updated_config = self.config.copy()
             updated_config["network_share"] = network_share
             updated_config["destinations"] = self.build_destinations_config()
-            updated_config["video_extensions"] = self.parse_extensions()
             updated_config["move_files"] = self.move_files_var.get()
             updated_config["uploaders"] = self.parse_uploaders()
 
